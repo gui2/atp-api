@@ -4,213 +4,28 @@
 (def base-url "http://www.atpworldtour.com")
 
 ; Generic patterns
-(def url-pattern
-  (re-pattern #"<a href.+?>"))
+(def url-pattern #"<a href.+?>")
 
-(def a-href-pattern
-  (re-pattern "<a href.+?>.+?</a>"))
+(def a-href-pattern #"<a href.+?>.+?</a>")
+
+(def match-stats-pattern #"atpworldtour\\.com/Share/Match-Facts-Pop-Up\\.aspx\\?t=\\d+&y=\\d{4}&r=\\d{1}&p=")
 
 ; Calendar page patterns
-(def tournament-block
-  (re-pattern #"(?s)<tr class=\"calendarFilterItem\">.+?</tr>"))
-
-(def calendar-date
-  (re-pattern #"\d{2}\.\d{2}\.\d{4}"))
-
-(def calendar-tournament-name
-  (re-pattern #"(?<=<td width=\"202\"><strong>)[^<]*"))
-
-(def calendar-tournament-country
-  (re-pattern #"(?<=<br /><strong>)[^<]*"))
-
-(def calendar-tournament-series
-  (re-pattern #"(?<=</strong><br />)[^<]*(?=</td>)"))
-
-(def calendar-in-out
-  (re-pattern #"(?<=<td width=\"51\">)[^<]*"))
-
-(def calendar-court
-  (re-pattern #"(?<=<td width=\"51\">.{6,7}<br />)[^<]*(?=</td>)"))
-
-(def calendar-prize
-  (re-pattern #"(?<=<span>)[^(]+(?=</span>)"))
-
-(def calendar-financial-commitment
-  (re-pattern #"(?<=<span>\().+?(?=\)</span>)"))
-
-(def calendar-sgl-num
-  (re-pattern #"(?<=SGL )\d+"))
-
-(def calendar-dbl-num
-  (re-pattern #"(?<=DBL )\d+"))
-
-(def calendar-sgl-url
-  (re-pattern #"(?<=<a href=\").*(?=\">SGL)"))
-
-(def calendar-dbl-url
-  (re-pattern #"(?<=<a href=\").*(?=\">DBL)"))
-
-(def calendar-sgl-winner
-  (re-pattern #"(?<=Singles:  <a href=\"/Tennis/Players/.{0,256}\">).+?(?=</a>)"))
-
-(def calendar-sgl-winner-url
-  (re-pattern #"(?<=Singles:  <a href=\").+?(?=\")"))
-
-(def calendar-dbl-row
-  (re-pattern #"(?<=Doubles:).+?</a>.+?</a>"))
+(def calendar-dbl-row #"(?<=Doubles:).+?</a>.+?</a>")
 
 ; Tournament page patterns
-(def tournament-name
-  (re-pattern "<h3>.+?</h3>"))
-
-(def tournament-location
-  (re-pattern #"(?<=<p class=\"tournamentSubTitle\">).+?(?= -)"))
-
-(def tournament-start-date
-  (re-pattern #"(?<= - )\d{2}\.\d{2}\.\d{4}"))
-
-(def tournament-end-date
-  (re-pattern #"(?<=\d{4}-)\d{2}\.\d{2}\.\d{4}"))
-
-(def tournament-draw
-  (re-pattern #"(?<=<p><span>Draw: </span>)\d+?(?=</p>)"))
-
-(def tournament-surface
-  (re-pattern #"(?<= <p><span>Surface: </span>).+?(?=</p>)"))
-
-(def tournament-prize
-  (re-pattern #"(?<= <p><span>Prize Money: </span>).+?(?=</p>)"))
-
-(def tournament-financial-commitment
-  (re-pattern #"(?<=Total Financial Commitment</a>: ).+?(?=\s)"))
-
-(def tournament-seed-blocks
-  (re-pattern #"(?s)<div id=\"cph.+?class=\"drawItem.+?<p class=\"seedNumber\">.+?</div>"))
-
-(def tournament-slot-num
-  (re-pattern #"(?<=<p class=\"seedNumber\">)\d+?(?=</p>)"))
-
-(def tournament-seed
-  (re-pattern #"(?<=<p class=\"highestRound\">).+?(?=</p>)"))
-
-(def tournament-seed-name
-  (re-pattern #"(?<=id=\"cphMain_phExtra_ctl00_ctl01_ctl\d{1,3}_Player1.{0,26}>).+?(?=</)"))
-
-(def tournament-seed-url
-  (re-pattern #"(?<=<a href=\").+?(?=\" id=\"cphMain_phExtra_ctl00_ctl01_ctl\d{1,3}_Player1)"))
-
-(def tournament-matches
-  (re-pattern #"(?s)<div id=\"cphMain_phExtra_ctl00_ctl0[2-9]_ctl\d{1,3}_DrawNodeDiv\".+?</div>\s.+?</div>\s"))
-
-(def tournament-ctl-rd
-  (re-pattern #"(?<=id=\"cphMain_phExtra_ctl00_ctl0)[2-9](?=_ctl\d{1,3}_DrawNodeDiv\")"))
-
-(def tournament-match-score
-  (re-pattern #"(?<=ScoreLink\">).*?(?=</a>)"))
-
-(def tournament-match-winner
-  (re-pattern #"(?<=class=\"(?:player winner|player)\">).+?(?=</a>)"))
-
-(def tournament-match-url
-  (re-pattern #"(?<=javascript:openWin\(').*?(?=','Matchfacts')"))
+(def tournament-draw #"(?<=<p><span>Draw: </span>)\d+?(?=</p>)")
 
 ; Player page patterns
-(def player-name
-  (re-pattern #"(?<=<h1>).+?(?=</h1>)"))
+(def player-current-rank #"(?<=Current</p><span class=\"bioGridRank\">).+?(?=</span>)")
 
-(def player-age
-  (re-pattern #"(?<=Age:</span> ).+?(?=\()"))
+(def player-high-rank #"(?<=High</p><span class=\"bioGridRank\">).+?(?=</span>)")
 
-(def player-bday
-  (re-pattern #"(?<=\d{2} \()\d{2}\.\d{2}\.\d{4}(?=\))"))
+(def player-rank-change #"(?<=<td width=\"46\"><span ).+?(?=</span>)")
 
-(def player-birthplace
-  (re-pattern #"(?<=Birthplace:</span> ).+?(?=</li>)"))
+(def player-win-loss #"(?<=<td width=\"52\">).+?(?=</td>)")
 
-(def player-residence
-  (re-pattern #"(?<=Residence:</span> ).+?(?=</li>)"))
-
-(def player-height
-  (re-pattern #"(?<=Height:</span> \d'\d{1,2}\" \()\d{3} cm(?=\))"))
-
-(def player-weight
-  (re-pattern #"(?<=Weight:</span> \d{2,3} lbs \()\d{2,3} kg(?=\))"))
-
-(def player-plays
-  (re-pattern #"(?<=Plays:</span> ).+?(?=</li>)"))
-
-(def player-turned-pro
-  (re-pattern #"(?<=Turned Pro:</span> )\d{4}(?=</li>)"))
-
-(def player-coach
-  (re-pattern #"(?<=Coach:</span> ).+?(?=</li>)"))
-
-(def player-website
-  (re-pattern #"(?<=Website:</span> <a href=\").+?(?=\")"))
-
-(def player-nationality
-  (re-pattern #"(?<=height=\"48\"  title=\").+?(?=\")"))
-
-(def player-singles-block
-  (re-pattern #"(?s)<table id=\"bioGridSingles\".+?</table>"))
-
-(def player-doubles-block
-  (re-pattern #"(?s)<table id=\"bioGridDoubles\".+?</table>"))
-
-(def player-current-rank
-  (re-pattern #"(?<=Current</p><span class=\"bioGridRank\">).+?(?=</span>)"))
-
-(def player-high-rank
-  (re-pattern #"(?<=High</p><span class=\"bioGridRank\">).+?(?=</span>)"))
-
-(def player-rank-change
-  (re-pattern #"(?<=<td width=\"46\"><span ).+?(?=</span>)"))
-
-(def player-win-loss
-  (re-pattern #"(?<=<td width=\"52\">).+?(?=</td>)"))
-
-(def player-titles
-  (re-pattern #"(?<=<td width=\"33\">).+?(?=</td>)"))
-
-(def player-ytd-prize
-  (re-pattern #"(?<=<td width=\"87\">).+?(?=[^>]</td>)"))
-
-(def player-career-prize
-  (re-pattern #"(?<=<td width=\"87\">).+?(?=<p)"))
-
-; Match stats page patterns
-(def match-tournament-name
-  (re-pattern #"(?<=false;\">)[^<].+?(?=</a>)"))
-
-(def match-tournament-url
-  (re-pattern #"(?<=onclick=\"openWin\(')/Tennis/Tournaments/.+?(?=')"))
-
-(def match-round
-  (re-pattern #"(?s)(?<=Round</td>.{127}colspan=\"2\">).+?(?=</td>)"))
-
-(def match-time
-  (re-pattern #"(?s)(?<=Time</td>.{127}colspan=\"2\">).+?(?=</td>)"))
-
-(def match-player-name
-  (re-pattern #"(?<=class=\"playerName\">).+?(?=</a>)"))
-
-(def match-player-url
-  (re-pattern #"(?<=openWin\(')/Tennis/Players/.+?(?=')"))
-
-(def match-player-nationality
-  (re-pattern #"(?<=height=\"48\"  title=\").+?(?=\")"))
-
-(def match-aces
-  (re-pattern #"(?s)(?<=Aces</td>.{125,165}>)\d+?(?=</td>)"))
-
-(def match-df
-  (re-pattern #"(?s)(?<=Double Faults</td>.{125,165}>)\d+?(?=</td>)"))
-
-(def match-stats
-  (re-pattern #"\d+/\d+"))
-
-(def match-service-games
-  (re-pattern #"(?s)(?<=Service Games Played</td>.{125,165}>)\d+?(?=</td>)"))
+(def player-titles #"(?<=<td width=\"33\">).+?(?=</td>)")
 
 ; General utils
 (defn substring? [sub st]
@@ -230,9 +45,6 @@
 
 (defn tournament-url? [url]
   (re-matches? tournament-pattern url))
-
-(def match-stats-pattern
-  (re-pattern "atpworldtour\\.com/Share/Match-Facts-Pop-Up\\.aspx\\?t=\\d+&y=\\d{4}&r=\\d{1}&p="))
 
 (defn match-stats-url? [url]
   (re-matches? match-stats-pattern url))
@@ -265,22 +77,22 @@
   (= loc "Indoor"))
 
 (defn map-calendar-page [page]
-  (let [blocks (re-seq tournament-block page)]
-    (map #(into {} {:date (re-find calendar-date %)
-                    :name (re-find calendar-tournament-name %)
-                    :location (re-find calendar-tournament-country %)
-                    :series (re-find calendar-tournament-series %)
-                    :indoor (indoor? (re-find calendar-in-out %))
-                    :court (re-find calendar-court %)
-                    :prize (re-find calendar-prize %)
-                    :financial-commitment (re-find calendar-financial-commitment %)
-                    :sgl-draw (re-find calendar-sgl-num %)
-                    :dbl-draw (re-find calendar-dbl-num %)
-                    :sgl-url (str base-url (re-find calendar-sgl-url %))
-                    :dbl-url (str base-url (re-find calendar-dbl-url %))
-                    :sgl-winner (re-find calendar-sgl-winner %)
+  (let [blocks (re-seq #"(?s)<tr class=\"calendarFilterItem\">.+?</tr>" page)]
+    (map #(into {} {:date (re-find #"\d{2}\.\d{2}\.\d{4}" %)
+                    :name (re-find #"(?<=<td width=\"202\"><strong>)[^<]*" %)
+                    :location (re-find #"(?<=<br /><strong>)[^<]*" %)
+                    :series (re-find #"(?<=</strong><br />)[^<]*(?=</td>)" %)
+                    :indoor (indoor? (re-find #"(?<=<td width=\"51\">)[^<]*" %))
+                    :court (re-find #"(?<=<td width=\"51\">)[^<]*" %)
+                    :prize (re-find #"(?<=<span>)[^(]+(?=</span>)" %)
+                    :financial-commitment (re-find #"(?<=<span>\().+?(?=\)</span>)" %)
+                    :sgl-draw (re-find #"(?<=SGL )\d+" %)
+                    :dbl-draw (re-find #"(?<=DBL )\d+" %)
+                    :sgl-url (str base-url (re-find #"(?<=<a href=\").*(?=\">SGL)" %))
+                    :dbl-url (str base-url (re-find #"(?<=<a href=\").*(?=\">DBL)" %))
+                    :sgl-winner (re-find #"(?<=Singles:  <a href=\"/Tennis/Players/.{0,256}\">).+?(?=</a>)" %)
                     :dbl-winners (clean-dbl-names (re-find calendar-dbl-row %))
-                    :sgl-winner-url (str base-url (re-find calendar-sgl-winner-url %))
+                    :sgl-winner-url (str base-url (re-find #"(?<=Singles:  <a href=\").+?(?=\")" %))
                     :dbl-winners-url (clean-dbl-urls (re-find calendar-dbl-row %))}) blocks)))
 
 ; Tournament page utils
@@ -296,22 +108,25 @@
       6.0 "R128")))
 
 (defn map-tournament-page [page]
-  (into {} {:name (get-text (re-find tournament-name page))
-            :location (re-find tournament-location page)
-            :start-date (re-find tournament-start-date page)
-            :end-date (re-find tournament-end-date page)
-            :draw (re-find tournament-draw page)
-            :surface (re-find tournament-surface page)
-            :prize-money (re-find tournament-prize page)
-            :financial-commitment (re-find tournament-financial-commitment page)
-            :seeds (map #(into {} {:slot-number (re-find tournament-slot-num %)
-                                   :seed (re-find tournament-seed %)
-                                   :player-name (re-find tournament-seed-name %)
-                                   :player-url (re-find tournament-seed-url %)}) (re-seq tournament-seed-blocks page))
-            :matches (map #(into {} {:round (get-round (re-find tournament-ctl-rd %) (re-find tournament-draw page))
-                                     :score (re-find tournament-match-score %)
-                                     :winner (re-find tournament-match-winner %)
-                                     :match-stats-url (str base-url (re-find tournament-match-url %))}) (re-seq tournament-matches page))}))
+  (into {} {:name (re-find #"(?<=<h3>).+?(?=</h3>)" page)
+            :location (re-find #"(?<=<p class=\"tournamentSubTitle\">).+?(?= -)" page)
+            :start-date (re-find #"(?<= - )\d{2}\.\d{2}\.\d{4}" page)
+            :end-date (re-find #"(?<=\d{4}-)\d{2}\.\d{2}\.\d{4}" page)
+            :draw (re-find tournament-darw page)
+            :surface (re-find #"(?<= <p><span>Surface: </span>).+?(?=</p>)" page)
+            :prize-money (re-find #"(?<= <p><span>Prize Money: </span>).+?(?=</p>)" page)
+            :financial-commitment (re-find #"(?<=Total Financial Commitment</a>: ).+?(?=\s)" page)
+            :seeds (map #(into {} {:slot-number (re-find #"(?<=<p class=\"seedNumber\">)\d+?(?=</p>)" %)
+                                   :seed (re-find #"(?<=<p class=\"highestRound\">).+?(?=</p>)" %)
+                                   :player-name (re-find #"(?<=id=\"cphMain_phExtra_ctl00_ctl01_ctl\d{1,3}_Player1.{0,26}>).+?(?=</)" %)
+                                   :player-url (re-find #"(?<=<a href=\").+?(?=\" id=\"cphMain_phExtra_ctl00_ctl01_ctl\d{1,3}_Player1)" %)})
+                        (re-seq #"(?s)<div id=\"cph.+?class=\"drawItem.+?<p class=\"seedNumber\">.+?</div>" page))
+            :matches (map #(into {} {:round (get-round (re-find #"(?<=id=\"cphMain_phExtra_ctl00_ctl0)[2-9](?=_ctl\d{1,3}_DrawNodeDiv\")" %)
+                                                       (re-find tournament-draw page))
+                                     :score (re-find #"(?<=ScoreLink\">).*?(?=</a>)" %)
+                                     :winner (re-find #"(?<=class=\"(?:player winner|player)\">).+?(?=</a>)" %)
+                                     :match-stats-url (str base-url (re-find #"(?<=javascript:openWin\(').*?(?=','Matchfacts')" %))})
+                          (re-seq #"(?s)<div id=\"cphMain_phExtra_ctl00_ctl0[2-9]_ctl\d{1,3}_DrawNodeDiv\".+?</div>\s.+?</div>\s" page))}))
 
 ; Player page utils
 (defn get-rank-change-value [s]
@@ -329,26 +144,26 @@
     nil))
 
 (defn map-player [page]
-  (let [sgl-block (re-find player-singles-block page)
-        dbl-block (re-find player-doubles-block page)
+  (let [sgl-block (re-find #"(?s)<table id=\"bioGridSingles\".+?</table>" page)
+        dbl-block (re-find #"(?s)<table id=\"bioGridDoubles\".+?</table>" page)
         sgl-wl (re-seq player-win-loss sgl-block)
         dbl-wl (re-seq player-win-loss dbl-block)
         sgl-titles (re-seq player-titles sgl-block)
         dbl-titles (re-seq player-titles dbl-block)]
-    (into {} {:name (re-find player-name page)
-              :age (re-find player-age page)
-              :birthday (re-find player-bday page)
-              :birthplace (re-find player-birthplace page)
-              :residence (re-find player-residence page)
-              :height (re-find player-height page)
-              :weight (re-find player-weight page)
-              :plays (re-find player-plays page)
-              :turned-pro (re-find player-turned-pro page)
-              :coach (re-find player-coach page)
-              :website (re-find player-website page)
-              :nationality (re-find player-nationality page)
-              :ytd-prize (re-find player-ytd-prize page)
-              :career-prize (re-find player-career-prize page)
+    (into {} {:name (re-find #"(?<=<h1>).+?(?=</h1>)" page)
+              :age (re-find #"(?<=Age:</span> ).+?(?=\()" page)
+              :birthday (re-find #"(?<=\d{2} \()\d{2}\.\d{2}\.\d{4}(?=\))" page)
+              :birthplace (re-find #"(?<=Birthplace:</span> ).+?(?=</li>)" page)
+              :residence (re-find #"(?<=Residence:</span> ).+?(?=</li>)" page)
+              :height (re-find #"(?<=Height:</span> \d{2,3} lbs \()\d{2,3} kg(?=\))" page)
+              :weight (re-find #"(?<=Weight:</span> \d{2,3} lbs \()\d{2,3} kg(?=\))" page)
+              :plays (re-find #"(?<=Plays:</span> ).+?(?=</li>)" page)
+              :turned-pro (re-find #"(?<=Turned Pro:</span> )\d{4}(?=</li>)" page)
+              :coach (re-find #"(?<=Coach:</span> ).+?(?=</li>)" page)
+              :website (re-find #"(?<=Website:</span> <a href=\").+?(?=\")" page)
+              :nationality (re-find #"(?<=height=\"48\"  title=\").+?(?=\")" page)
+              :ytd-prize (re-find #"(?<=<td width=\"87\">).+?(?=[^>]</td>)" page)
+              :career-prize (re-find #"(?<=<td width=\"87\">).+?(?=<p)" page)
               :singles {:this-year {:ranking (re-find player-current-rank sgl-block)
                                     :week-change (get-rank-change-value (re-find player-rank-change sgl-block))
                                     :win-loss (seq-min-size sgl-wl)
@@ -367,17 +182,17 @@
 ; Match stat utils
 ; Not all stats are necessary - a lot can be calculated (e.g. 1st serve return pts won = other player total serve - 1st serve pts won)
 (defn map-match-stats [page]
-  (let [name-matches (re-seq match-player-name page)
-        url-matches (re-seq match-player-url page)
-        nationalities (re-seq match-player-nationality page)
-        aces (re-seq match-aces page)
-        df (re-seq match-df page)
-        stats (re-seq match-stats page)
-        service-games (re-seq match-service-games page)]
-    (into {} {:tournament (re-find match-tournament-name page)
-              :tournament-url (str base-url (re-find match-tournament-url page))
-              :round (re-find match-round page)
-              :time (re-find match-time page)
+  (let [name-matches (re-seq #"(?<=class=\"playerName\">).+?(?=</a>)" page)
+        url-matches (re-seq #"(?<=openWin\(')/Tennis/Players/.+?(?=')" page)
+        nationalities (re-seq #"(?<=height=\"48\"  title=\").+?(?=\")" page)
+        aces (re-seq #"(?s)(?<=Aces</td>.{125,165}>)\d+?(?=</td>)" page)
+        df (re-seq #"(?s)(?<=Double Faults</td>.{125,165}>)\d+?(?=</td>)" page)
+        stats (re-seq #"\d+/\d+" page)
+        service-games (re-seq #"(?s)(?<=Service Games Played</td>.{125,165}>)\d+?(?=</td>)" page)]
+    (into {} {:tournament (re-find #"(?<=false;\">)[^<].+?(?=</a>)" page)
+              :tournament-url (str base-url (re-find #"(?<=onclick=\"openWin\(')/Tennis/Tournaments/.+?(?=')" page))
+              :round (re-find #"(?s)(?<=Round</td>.{127}colspan=\"2\">).+?(?=</td>)" page)
+              :time (re-find #"(?s)(?<=Time</td>.{127}colspan=\"2\">).+?(?=</td>)" page)
               :winner (nth name-matches 0)
               :winner-url (str base-url (nth url-matches 0))
               :p1-name (nth name-matches 1)

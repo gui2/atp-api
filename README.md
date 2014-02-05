@@ -4,7 +4,15 @@ A Clojure API to retrieve data from the [ATP World Tour website](http://www.atpw
 
 ## Usage
 
-FIXME
+will add...
+
+parse-calendar
+
+parse-tournament
+
+parse-player
+
+parse-match-stats
 
 ## License
 
