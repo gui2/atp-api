@@ -3,61 +3,61 @@
 ; Constants
 (def base-url "http://www.atpworldtour.com")
 
-; Calendar page patterns
-;TODO: optimize regex
-(def tournament-block
-  (re-pattern "(?s)<tr class=\"calendarFilterItem\">.+?</tr>"))
-
-(def calendar-date
-  (re-pattern "\\d{2}\\.\\d{2}\\.\\d{4}"))
-
-(def calendar-tournament-name
-  (re-pattern "<td width=\"202\"><strong>[^<]*"))
-
-(def calendar-tournament-country
-  (re-pattern "<br /><strong>[^<]*"))
-
-(def calendar-tournament-series
-  (re-pattern "</strong><br />[^<]*</td>"))
-
-(def calendar-in-out
-  (re-pattern "<td width=\"51\">[^<]*"))
-
-(def calendar-court
-  (re-pattern "<td width=\"51\">.*<br />[^<]*</td>"))
-
-(def calendar-prize
-  (re-pattern "<span>[^(]+</span>"))
-
-(def calendar-financial-commitment
-  (re-pattern "<span>\\(.+?\\)</span>"))
-
-(def calendar-sgl-num
-  (re-pattern "SGL \\d+"))
-
-(def calendar-dbl-num
-  (re-pattern "DBL \\d+"))
-
-(def calendar-sgl-url
-  (re-pattern "<a href=\".*\">SGL"))
-
-(def calendar-dbl-url
-  (re-pattern "<a href=\".*\">DBL"))
-
-(def calendar-sgl-winner
-  (re-pattern "Singles:.+?</a>"))
-
-(def calendar-sgl-winner-url
-  (re-pattern "Singles:.+?\">"))
-
-(def calendar-dbl-row
-  (re-pattern "Doubles:.+?</a>.+?</a>"))
-
+; Generic patterns
 (def url-pattern
-  (re-pattern "<a href.+?>"))
+  (re-pattern #"<a href.+?>"))
 
 (def a-href-pattern
   (re-pattern "<a href.+?>.+?</a>"))
+
+; Calendar page patterns
+(def tournament-block
+  (re-pattern #"(?s)<tr class=\"calendarFilterItem\">.+?</tr>"))
+
+(def calendar-date
+  (re-pattern #"\d{2}\.\d{2}\.\d{4}"))
+
+(def calendar-tournament-name
+  (re-pattern #"(?<=<td width=\"202\"><strong>)[^<]*"))
+
+(def calendar-tournament-country
+  (re-pattern #"(?<=<br /><strong>)[^<]*"))
+
+(def calendar-tournament-series
+  (re-pattern #"(?<=</strong><br />)[^<]*(?=</td>)"))
+
+(def calendar-in-out
+  (re-pattern #"(?<=<td width=\"51\">)[^<]*"))
+
+(def calendar-court
+  (re-pattern #"(?<=<td width=\"51\">.{6,7}<br />)[^<]*(?=</td>)"))
+
+(def calendar-prize
+  (re-pattern #"(?<=<span>)[^(]+(?=</span>)"))
+
+(def calendar-financial-commitment
+  (re-pattern #"(?<=<span>\().+?(?=\)</span>)"))
+
+(def calendar-sgl-num
+  (re-pattern #"(?<=SGL )\d+"))
+
+(def calendar-dbl-num
+  (re-pattern #"(?<=DBL )\d+"))
+
+(def calendar-sgl-url
+  (re-pattern #"(?<=<a href=\").*(?=\">SGL)"))
+
+(def calendar-dbl-url
+  (re-pattern #"(?<=<a href=\").*(?=\">DBL)"))
+
+(def calendar-sgl-winner
+  (re-pattern #"(?<=Singles:  <a href=\"/Tennis/Players/.{0,256}\">).+?(?=</a>)"))
+
+(def calendar-sgl-winner-url
+  (re-pattern #"(?<=Singles:  <a href=\").+?(?=\")"))
+
+(def calendar-dbl-row
+  (re-pattern #"(?<=Doubles:).+?</a>.+?</a>"))
 
 ; Tournament page patterns
 (def tournament-name
@@ -253,26 +253,6 @@
     (subs s start)))
 
 ; Calendar page utils
-(defn clean-court-tags [s]
-  (if (nil? s) ""
-    (clojure.string/replace (neg-subs s 0 5) #"<td width=\"51\">[^<]*<br />" "")))
-
-(defn clean-draw [s]
-  (if (nil? s) ""
-    (subs s 4)))
-
-(defn clean-tournament-url [url]
-  (if (nil? url) ""
-    (str base-url (neg-subs url 9 5))))
-
-(defn clean-winner-name [s]
-  (if (nil? s) ""
-    (clojure.string/replace (neg-subs s 0 4) #"Singles:.+?\">" "")))
-
-(defn clean-winner-url [url]
-  (if (nil? url) ""
-    (str base-url (neg-subs url 19 2))))
-
 (defn clean-dbl-names [row]
   (if (nil? row) ""
     (map #(get-text %) (re-seq a-href-pattern row))))
@@ -284,24 +264,23 @@
 (defn indoor? [loc]
   (= loc "Indoor"))
 
-; TODO: optimize the regex
 (defn map-calendar-page [page]
   (let [blocks (re-seq tournament-block page)]
     (map #(into {} {:date (re-find calendar-date %)
-                    :name (subs (re-find calendar-tournament-name %) 24)
-                    :location (subs (re-find calendar-tournament-country %) 14)
-                    :series (neg-subs (re-find calendar-tournament-series %) 15 5)
-                    :indoor (indoor? (subs (re-find calendar-in-out %) 15))
-                    :court (clean-court-tags (re-find calendar-court %))
-                    :prize (neg-subs (re-find calendar-prize %) 6 7)
-                    :financial-commitment (neg-subs (re-find calendar-financial-commitment %) 7 8)
-                    :sgl-draw (clean-draw (re-find calendar-sgl-num %))
-                    :dbl-draw (clean-draw (re-find calendar-dbl-num %))
-                    :sgl-url (clean-tournament-url (re-find calendar-sgl-url %))
-                    :dbl-url (clean-tournament-url (re-find calendar-dbl-url %))
-                    :sgl-winner (clean-winner-name (re-find calendar-sgl-winner %))
+                    :name (re-find calendar-tournament-name %)
+                    :location (re-find calendar-tournament-country %)
+                    :series (re-find calendar-tournament-series %)
+                    :indoor (indoor? (re-find calendar-in-out %))
+                    :court (re-find calendar-court %)
+                    :prize (re-find calendar-prize %)
+                    :financial-commitment (re-find calendar-financial-commitment %)
+                    :sgl-draw (re-find calendar-sgl-num %)
+                    :dbl-draw (re-find calendar-dbl-num %)
+                    :sgl-url (str base-url (re-find calendar-sgl-url %))
+                    :dbl-url (str base-url (re-find calendar-dbl-url %))
+                    :sgl-winner (re-find calendar-sgl-winner %)
                     :dbl-winners (clean-dbl-names (re-find calendar-dbl-row %))
-                    :sgl-winner-url (clean-winner-url (re-find calendar-sgl-winner-url %))
+                    :sgl-winner-url (str base-url (re-find calendar-sgl-winner-url %))
                     :dbl-winners-url (clean-dbl-urls (re-find calendar-dbl-row %))}) blocks)))
 
 ; Tournament page utils
@@ -344,10 +323,18 @@
         (re-find #"\d{1,4}" s))
       0)))
 
-; TODO: bug with retired players returning win-loss & titles for this year
+(defn seq-min-size [sq]
+  (if (> (count sq) 1)
+    (first sq)
+    nil))
+
 (defn map-player [page]
   (let [sgl-block (re-find player-singles-block page)
-        dbl-block (re-find player-doubles-block page)]
+        dbl-block (re-find player-doubles-block page)
+        sgl-wl (re-seq player-win-loss sgl-block)
+        dbl-wl (re-seq player-win-loss dbl-block)
+        sgl-titles (re-seq player-titles sgl-block)
+        dbl-titles (re-seq player-titles dbl-block)]
     (into {} {:name (re-find player-name page)
               :age (re-find player-age page)
               :birthday (re-find player-bday page)
@@ -364,18 +351,18 @@
               :career-prize (re-find player-career-prize page)
               :singles {:this-year {:ranking (re-find player-current-rank sgl-block)
                                     :week-change (get-rank-change-value (re-find player-rank-change sgl-block))
-                                    :win-loss (re-find player-win-loss sgl-block)
-                                    :titles (re-find player-titles sgl-block)}
+                                    :win-loss (seq-min-size sgl-wl)
+                                    :titles (seq-min-size sgl-titles)}
                         :career {:ranking (re-find player-high-rank sgl-block)
-                                 :win-loss (last (re-seq player-win-loss sgl-block))
-                                 :titles (last (re-seq player-titles sgl-block))}}
+                                 :win-loss (last sgl-wl)
+                                 :titles (last sgl-titles)}}
               :doubles {:this-year {:ranking (re-find player-current-rank dbl-block)
                                     :week-change (get-rank-change-value (re-find player-rank-change dbl-block))
-                                    :win-loss (re-find player-win-loss dbl-block)
-                                    :titles (re-find player-titles dbl-block)}
+                                    :win-loss (seq-min-size dbl-wl)
+                                    :titles (seq-min-size dbl-titles)}
                         :career {:ranking (re-find player-high-rank dbl-block)
-                                 :win-loss (last (re-seq player-win-loss dbl-block))
-                                 :titles (last (re-seq player-titles dbl-block))}}})))
+                                 :win-loss (last dbl-wl)
+                                 :titles (last dbl-titles)}}})))
 
 ; Match stat utils
 ; Not all stats are necessary - a lot can be calculated (e.g. 1st serve return pts won = other player total serve - 1st serve pts won)
@@ -397,14 +384,12 @@
               :p1-url (str base-url (nth url-matches 1))
               :p2-name (nth name-matches 2)
               :p2-url (str base-url (nth url-matches 2))
-              :p1-nationality (nth nationalities 0)
-              :p2-nationality (if (> (count nationalities) 1)
-                                (nth nationalities 1)
-                                "")
-              :p1-aces (nth aces 0)
-              :p2-aces (nth aces 1)
-              :p1-df (nth df 0)
-              :p2-df (nth df 1)
+              :p1-nationality (first nationalities 0)
+              :p2-nationality (seq-min-size nationalities)
+              :p1-aces (first aces 0)
+              :p2-aces (last aces 1)
+              :p1-df (first df 0)
+              :p2-df (last df 1)
               :p1-first-serve (first (clojure.string/split (nth stats 0) #"/"))
               :p1-total-serve (last (clojure.string/split (nth stats 0) #"/"))
               :p2-first-serve (first (clojure.string/split (nth stats 1) #"/"))
@@ -417,8 +402,8 @@
               :p1-total-break-pts (last (clojure.string/split (nth stats 6) #"/"))
               :p2-break-pts-saved (first (clojure.string/split (nth stats 7) #"/"))
               :p2-total-break-pts (last (clojure.string/split (nth stats 7) #"/"))
-              :p1-service-games (nth service-games 0)
-              :p2-service-games (nth service-games 1)})))
+              :p1-service-games (first service-games 0)
+              :p2-service-games (last service-games 1)})))
 
 ; API calls
 (defn parse-calendar [url]
