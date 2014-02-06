@@ -150,11 +150,11 @@
         sgl-titles (re-seq player-titles sgl-block)
         dbl-titles (re-seq player-titles dbl-block)]
     (into {} {:name (re-find #"(?<=<h1>).+?(?=</h1>)" page)
-              :age (re-find #"(?<=Age:</span> ).+?(?=\()" page)
+              :age (re-find #"(?<=Age:</span> ).+?(?= \()" page)
               :birthday (re-find #"(?<=\d{2} \()\d{2}\.\d{2}\.\d{4}(?=\))" page)
               :birthplace (re-find #"(?<=Birthplace:</span> ).+?(?=</li>)" page)
               :residence (re-find #"(?<=Residence:</span> ).+?(?=</li>)" page)
-              :height (re-find #"(?<=Height:</span> \d{2,3} lbs \()\d{2,3} kg(?=\))" page)
+              :height (re-find #"(?<=Height:</span> \d'\d{1,2}\" \()\d{2,3} cm(?=\))" page)
               :weight (re-find #"(?<=Weight:</span> \d{2,3} lbs \()\d{2,3} kg(?=\))" page)
               :plays (re-find #"(?<=Plays:</span> ).+?(?=</li>)" page)
               :turned-pro (re-find #"(?<=Turned Pro:</span> )\d{4}(?=</li>)" page)
