@@ -8,9 +8,9 @@
 
 (def a-href-pattern #"<a href.+?>.+?</a>")
 
-(def match-stats-pattern #"atpworldtour\.com/Share/Match-Facts-Pop-Up\.aspx\?t=\d+&y=\d{4}&r=\d{1}&p=")
-
 (def tournament-pattern #"atpworldtour\.com/Share/Event-Draws\.aspx\?e=\d+&y=\d{4}")
+
+(def match-stats-pattern #"atpworldtour\.com/Share/Match-Facts-Pop-Up\.aspx\?t=\d+&y=\d{4}&r=\d{1}&p=")
 
 ; Calendar page patterns
 (def calendar-dbl-row #"(?<=Doubles:).+?</a>.+?</a>")
@@ -44,6 +44,9 @@
 
 (defn tournament-url? [url]
   (re-matches? tournament-pattern url))
+
+(defn double-tournament-url? [url]
+  (and (re-matches? tournament-pattern url) (substring? "&t=d" url)))
 
 (defn match-stats-url? [url]
   (re-matches? match-stats-pattern url))
@@ -227,10 +230,12 @@
     "Invalid calendar URL"))
 
 (defn parse-tournament [url]
-  (if tournament-url?
-    (let [page (load-url url)]
-      (map-tournament-page page))
-    "Invalid tournament URL"))
+  (if (double-tournament-url? url)
+    (println "TODO double tournaments")
+    (if (tournament-url? url)
+      (let [page (load-url url)]
+        (map-tournament-page page))
+      "Invalid tournament URL")))
 
 (defn parse-player [url]
   (if player-url?

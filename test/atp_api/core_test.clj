@@ -6,6 +6,7 @@
 (def a-href-url "<a href=\"www.asdf.com\">test</a>")
 (def calendar-url "http://www.atpworldtour.com/Scores/Archive-Event-Calendar.aspx?t=2&y=2014")
 (def tournament-url "http://www.atpworldtour.com/Share/Event-Draws.aspx?e=339&y=2014")
+(def dbl-tournament-url "http://www.atpworldtour.com/Share/Event-Draws.aspx?e=339&y=2014&t=d")
 (def player-url "http://www.atpworldtour.com/Tennis/Players/Top-Players/Roger-Federer.aspx")
 (def match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=4&p=F324")
 (def derp-url "http://www.asdf.qewrty/")
@@ -40,6 +41,8 @@
       (calendar-url? derp-url) => false
       (tournament-url? tournament-url) => true
       (tournament-url? derp-url) => false
+      (double-tournament-url? dbl-tournament-url) => true
+      (double-tournament-url? tournament-url) => false
       (player-url? player-url) => true
       (player-url? derp-url) => false
       (match-stats-url? match-stats-url) => true
