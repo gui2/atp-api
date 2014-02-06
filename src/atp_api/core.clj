@@ -8,7 +8,9 @@
 
 (def a-href-pattern #"<a href.+?>.+?</a>")
 
-(def match-stats-pattern #"atpworldtour\\.com/Share/Match-Facts-Pop-Up\\.aspx\\?t=\\d+&y=\\d{4}&r=\\d{1}&p=")
+(def match-stats-pattern #"atpworldtour\.com/Share/Match-Facts-Pop-Up\.aspx\?t=\d+&y=\d{4}&r=\d{1}&p=")
+
+(def tournament-pattern #"atpworldtour\.com/Share/Event-Draws\.aspx\?e=\d+&y=\d{4}")
 
 ; Calendar page patterns
 (def calendar-dbl-row #"(?<=Doubles:).+?</a>.+?</a>")
@@ -40,9 +42,6 @@
 (defn calendar-url? [url]
   (substring? "atpworldtour.com/Scores/Archive-Event-Calendar.aspx" url))
 
-(def tournament-pattern
-  (re-pattern "atpworldtour\\.com/Share/Event-Draws\\.aspx\\?e=\\d+&y=\\d{4}"))
-
 (defn tournament-url? [url]
   (re-matches? tournament-pattern url))
 
@@ -61,7 +60,7 @@
     (subs s start (- (count s) end))))
 
 (defn checked-subs [s start]
-  (if (nil? s) ""
+  (if (nil? s) nil
     (subs s start)))
 
 ; Calendar page utils
@@ -83,7 +82,7 @@
                     :location (re-find #"(?<=<br /><strong>)[^<]*" %)
                     :series (re-find #"(?<=</strong><br />)[^<]*(?=</td>)" %)
                     :indoor (indoor? (re-find #"(?<=<td width=\"51\">)[^<]*" %))
-                    :court (re-find #"(?<=<td width=\"51\">)[^<]*" %)
+                    :court (re-find #"(?<=<td width=\"51\">.{0,7}<br />)[^<]*" %)
                     :prize (re-find #"(?<=<span>)[^(]+(?=</span>)" %)
                     :financial-commitment (re-find #"(?<=<span>\().+?(?=\)</span>)" %)
                     :sgl-draw (re-find #"(?<=SGL )\d+" %)
@@ -108,11 +107,11 @@
       6.0 "R128")))
 
 (defn map-tournament-page [page]
-  (into {} {:name (re-find #"(?<=<h3>).+?(?=</h3>)" page)
+  (into {} {:name (get-text (re-find #"(?<=<h3>).+?(?=</h3>)" page))
             :location (re-find #"(?<=<p class=\"tournamentSubTitle\">).+?(?= -)" page)
             :start-date (re-find #"(?<= - )\d{2}\.\d{2}\.\d{4}" page)
             :end-date (re-find #"(?<=\d{4}-)\d{2}\.\d{2}\.\d{4}" page)
-            :draw (re-find tournament-darw page)
+            :draw (re-find tournament-draw page)
             :surface (re-find #"(?<= <p><span>Surface: </span>).+?(?=</p>)" page)
             :prize-money (re-find #"(?<= <p><span>Prize Money: </span>).+?(?=</p>)" page)
             :financial-commitment (re-find #"(?<=Total Financial Commitment</a>: ).+?(?=\s)" page)
@@ -199,12 +198,12 @@
               :p1-url (str base-url (nth url-matches 1))
               :p2-name (nth name-matches 2)
               :p2-url (str base-url (nth url-matches 2))
-              :p1-nationality (first nationalities 0)
+              :p1-nationality (first nationalities)
               :p2-nationality (seq-min-size nationalities)
-              :p1-aces (first aces 0)
-              :p2-aces (last aces 1)
-              :p1-df (first df 0)
-              :p2-df (last df 1)
+              :p1-aces (first aces)
+              :p2-aces (last aces)
+              :p1-df (first df)
+              :p2-df (last df)
               :p1-first-serve (first (clojure.string/split (nth stats 0) #"/"))
               :p1-total-serve (last (clojure.string/split (nth stats 0) #"/"))
               :p2-first-serve (first (clojure.string/split (nth stats 1) #"/"))
@@ -217,8 +216,8 @@
               :p1-total-break-pts (last (clojure.string/split (nth stats 6) #"/"))
               :p2-break-pts-saved (first (clojure.string/split (nth stats 7) #"/"))
               :p2-total-break-pts (last (clojure.string/split (nth stats 7) #"/"))
-              :p1-service-games (first service-games 0)
-              :p2-service-games (last service-games 1)})))
+              :p1-service-games (first service-games)
+              :p2-service-games (last service-games)})))
 
 ; API calls
 (defn parse-calendar [url]
