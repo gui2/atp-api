@@ -109,7 +109,7 @@
       5.0 "R64"
       6.0 "R128")))
 
-(defn map-tournament-page [page]
+(defn map-tournament-page [page dbl-flag]
   (into {} {:name (get-text (re-find #"(?<=<h3>).+?(?=</h3>)" page))
             :location (re-find #"(?<=<p class=\"tournamentSubTitle\">).+?(?= -)" page)
             :start-date (re-find #"(?<= - )\d{2}\.\d{2}\.\d{4}" page)
@@ -120,13 +120,22 @@
             :financial-commitment (re-find #"(?<=Total Financial Commitment</a>: ).+?(?=\s)" page)
             :seeds (map #(into {} {:slot-number (re-find #"(?<=<p class=\"seedNumber\">)\d+?(?=</p>)" %)
                                    :seed (re-find #"(?<=<p class=\"highestRound\">).+?(?=</p>)" %)
-                                   :player-name (re-find #"(?<=id=\"cphMain_phExtra_ctl00_ctl01_ctl\d{1,3}_Player1.{0,26}>).+?(?=</)" %)
-                                   :player-url (re-find #"(?<=<a href=\").+?(?=\" id=\"cphMain_phExtra_ctl00_ctl01_ctl\d{1,3}_Player1)" %)})
-                        (re-seq #"(?s)<div id=\"cph.+?class=\"drawItem.+?<p class=\"seedNumber\">.+?</div>" page))
+                                   :player-name (if dbl-flag
+                                                  (list (re-find #"(?<=Player1.{0,26}>).+?(?=</)" %)
+                                                        (re-find #"(?<=Player2.{0,26}>).+(?=</)" %))
+                                                  (re-find #"(?<=Player1.{0,26}>).+?(?=</)" %))
+                                   :player-url (if dbl-flag
+                                                 (list (re-find #"(?<=<a href=\").+?(?=\" id=.+?Player1)" %)
+                                                       (re-find #"(?<=<a href=\").+?(?=\" id=.+?Player2)" %))
+                                                 (re-find #"(?<=<a href=\").+?(?=\" id=.+?Player1)" %))})
+                        (re-seq #"(?s)=\"cph.+?class=\"drawItem.+?<p class=\"seedNumber\">.+?<div id" page))
             :matches (map #(into {} {:round (get-round (re-find #"(?<=id=\"cphMain_phExtra_ctl00_ctl0)[2-9](?=_ctl\d{1,3}_DrawNodeDiv\")" %)
                                                        (re-find tournament-draw page))
                                      :score (re-find #"(?<=ScoreLink\">).*?(?=</a>)" %)
-                                     :winner (re-find #"(?<=class=\"(?:player winner|player)\">).+?(?=</a>)" %)
+                                     :winner (if dbl-flag
+                                               (list (re-find #"(?<=Player1Link\" class=\"(?:player winner|player)\">).+?(?=</a>)" %)
+                                                     (re-find #"(?<=Player2Link\" class=\"(?:player winner|player)\">).+?(?=</a>)" %))
+                                               (re-find #"(?<=class=\"(?:player winner|player)\">).+?(?=</a>)" %)) ;dbl check
                                      :match-stats-url (str base-url (re-find #"(?<=javascript:openWin\(').*?(?=','Matchfacts')" %))})
                           (re-seq #"(?s)<div id=\"cphMain_phExtra_ctl00_ctl0[2-9]_ctl\d{1,3}_DrawNodeDiv\".+?</div>\s.+?</div>\s" page))}))
 
@@ -230,12 +239,10 @@
     "Invalid calendar URL"))
 
 (defn parse-tournament [url]
-  (if (double-tournament-url? url)
-    (println "TODO double tournaments")
-    (if (tournament-url? url)
-      (let [page (load-url url)]
-        (map-tournament-page page))
-      "Invalid tournament URL")))
+  (if (tournament-url? url)
+    (let [page (load-url url)]
+      (map-tournament-page page (double-tournament-url? url)))
+    "Invalid tournament URL"))
 
 (defn parse-player [url]
   (if player-url?

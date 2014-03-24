@@ -1,4 +1,4 @@
-(defproject atp-api "0.1.0-SNAPSHOT"
+(defproject atp-api "0.2.1"
   :description "Clojure API for retrieving data from ATP World Tour (http://www.atpworldtour.com/) website"
   :url "https://github.com/nikolap/atp-api"
   :license {:name "Eclipse Public License"
