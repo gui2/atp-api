@@ -1,5 +1,7 @@
 # ATP-API
 
+[![Build Status](https://travis-ci.org/nikolap/atp-api.svg?branch=master)](https://travis-ci.org/nikolap/atp-api)
+
 A Clojure API to retrieve data from the [ATP World Tour website](http://www.atpworldtour.com/). Currently a work in progress, a lot of features remain to be added.
 
 ## Usage
