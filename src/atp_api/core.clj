@@ -5,11 +5,8 @@
 
 ; Generic patterns
 (def url-pattern #"<a href.+?>")
-
 (def a-href-pattern #"<a href.+?>.+?</a>")
-
 (def tournament-pattern #"atpworldtour\.com/Share/Event-Draws\.aspx\?e=\d+&y=\d{4}")
-
 (def match-stats-pattern #"atpworldtour\.com/Share/Match-Facts-Pop-Up\.aspx\?t=\d+&y=\d{4}&r=\d{1}&p=")
 
 ; Calendar page patterns
@@ -20,14 +17,14 @@
 
 ; Player page patterns
 (def player-current-rank #"(?<=Current</p><span class=\"bioGridRank\">).+?(?=</span>)")
-
 (def player-high-rank #"(?<=High</p><span class=\"bioGridRank\">).+?(?=</span>)")
-
 (def player-rank-change #"(?<=<td width=\"46\"><span ).+?(?=</span>)")
-
 (def player-win-loss #"(?<=<td width=\"52\">).+?(?=</td>)")
-
 (def player-titles #"(?<=<td width=\"33\">).+?(?=</td>)")
+
+; Rankings patterns
+(def rank-player-url #"(?<=href=\").+?(?=\")")
+(def rank-inner-text #"(?<=\">).+?(?=</a>)")
 
 ; General utils
 (defn substring? [sub st]
@@ -55,6 +52,9 @@
   (or (substring? "atpworldtour.com/Tennis/Players/" url)
       (or (substring? "atpworldtour.com/tennis/players/" url)
           (substring? "resources" url))))
+
+(defn rankings-url? [url]
+  (substring? "atpworldtour.com/Rankings" url))
 
 (defn get-text [tag]
   (clojure.string/replace tag #"<[^>]*>" ""))
@@ -232,6 +232,22 @@
               :p1-service-games (first service-games)
               :p2-service-games (last service-games)})))
 
+; Ranking page utils
+(defn map-rankings [page]
+  (let [first-block (re-seq #"(?s)(?<=class=\"first\">\r).+?(?=<td>0)" page)
+        pts-block (re-seq #"(?<=<td><a).+?(?=</td>)" page)
+        change-block (re-seq #"(?<=<td>)[^<]+?(?=</td>)" page)
+        last-block (re-seq #"(?<=class=\"last\"><a ).+?(?=</td>)" page)]
+    (map #(into {} {:rank (re-find #"(?<=rank\">).+?(?=<)" %1)
+                    :name (re-find rank-inner-text %1)
+                    :url (re-find rank-player-url %1)
+                    :pts (re-find rank-inner-text %2)
+                    :pts-url (str base-url (re-find rank-player-url %2))
+                    :week-change %3
+                    :tourn-played (re-find #"(?<=>).+?(?=<)" %4)
+                    :tourn-played-url (str base-url (re-find #"(?<=href=\").+?(?=\">)" %4))})
+         first-block pts-block change-block last-block)))
+
 ; API calls
 (defn parse-calendar [url]
   (if calendar-url?
@@ -256,3 +272,9 @@
     (let [page (load-url url)]
       (map-match-stats page))
     "Invalid match status URL"))
+
+(defn parse-rankings [url]
+  (if rankings-url?
+    (let [page (load-url url)]
+      (map-rankings page))
+    "Invalid rankings URL"))

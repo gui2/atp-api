@@ -6,7 +6,7 @@ A Clojure API to retrieve data from the [ATP World Tour website](http://www.atpw
 
 ```clj
 ; Step 1: add to your "project.clj" file
-:dependencies [[atp-api "0.2.2"]]
+:dependencies [[atp-api "0.2.3"]]
 
 ; Step 2: Add the API to your .clj file
 (require '[atp-api.core :as atp])
@@ -20,6 +20,8 @@ A Clojure API to retrieve data from the [ATP World Tour website](http://www.atpw
 (atp/parse-player "http://www.atpworldtour.com/Tennis/Players/Top-Players/Roger-Federer.aspx")
 
 (atp/parse-match-stats "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=4&p=F324")
+
+(atp/parse-rankings "http://www.atpworldtour.com/Rankings/Doubles.aspx")
 ```
 
 ## License

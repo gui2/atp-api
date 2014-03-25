@@ -11,6 +11,8 @@
 (def player-test-url (clojure.java.io/resource "test/player-test.html"))
 (def match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=4&p=F324")
 (def derp-url "http://www.asdf.qewrty/")
+(def singles-ranking-url "http://www.atpworldtour.com/Rankings/Singles.aspx")
+(def doubles-ranking-url "http://www.atpworldtour.com/Rankings/Doubles.aspx?d=03.03.2014&r=1&c=#")
 
 (fact "regex correctly matches a url in a href tag"
       a-href-url => url-pattern
@@ -37,7 +39,7 @@
       (load-url "http://www.google.com/") => truthy
       (load-url "http://www.google.fakeone/") => (throws Exception))
 
-(fact "tests various url checks (calendar, tournament, player, match stats)"
+(fact "tests various url checks"
       (calendar-url? calendar-url) => true
       (calendar-url? derp-url) => false
       (tournament-url? tournament-url) => true
@@ -47,7 +49,10 @@
       (player-url? player-url) => true
       (player-url? derp-url) => false
       (match-stats-url? match-stats-url) => true
-      (match-stats-url? derp-url) => false)
+      (match-stats-url? derp-url) => false
+      (rankings-url? singles-ranking-url) => true
+      (rankings-url? doubles-ranking-url) => true
+      (rankings-url? derp-url) => false)
 
 (fact "'get-text' returns text between html tags"
       (get-text "<p>asdf</p>") => "asdf"
@@ -94,10 +99,17 @@
        :seeds '({:player-name "Federer, Roger", :player-url "http://www.atpworldtour.com/tennis/players/F324.aspx", :seed "(1)", :slot-number "1"} {:player-name "Bye", :player-url nil, :seed nil, :slot-number "2"} {:player-name "Duckworth, James", :player-url "http://www.atpworldtour.com/tennis/players/D994.aspx", :seed "WC", :slot-number "3"} {:player-name "Nieminen, Jarkko", :player-url "http://www.atpworldtour.com/tennis/players/N289.aspx", :seed nil, :slot-number "4"} {:player-name "Matosevic, Marinko", :player-url "http://www.atpworldtour.com/tennis/players/ME05.aspx", :seed nil, :slot-number "5"} {:player-name "Benneteau, Julien", :player-url "http://www.atpworldtour.com/tennis/players/B747.aspx", :seed nil, :slot-number "6"} {:player-name "Querrey, Sam", :player-url "http://www.atpworldtour.com/tennis/players/Q927.aspx", :seed nil, :slot-number "7"} {:player-name "Tursunov, Dmitry", :player-url "http://www.atpworldtour.com/tennis/players/T315.aspx", :seed "(7)", :slot-number "8"} {:player-name "Herbert, Pierre-Hugues", :player-url "http://www.atpworldtour.com/tennis/players/H996.aspx", :seed "LL", :slot-number "9"} {:player-name "Bye", :player-url nil, :seed nil, :slot-number "10"} {:player-name "Groth, Samuel", :player-url "http://www.atpworldtour.com/tennis/players/G940.aspx", :seed "WC", :slot-number "11"} {:player-name "Harrison, Ryan", :player-url "http://www.atpworldtour.com/tennis/players/H940.aspx", :seed "Q", :slot-number "12"} {:player-name "Sijsling, Igor", :player-url "http://www.atpworldtour.com/tennis/players/SF36.aspx", :seed nil, :slot-number "13"} {:player-name "Mahut, Nicolas", :player-url "http://www.atpworldtour.com/tennis/players/M873.aspx", :seed nil, :slot-number "14"} {:player-name "Mannarino, Adrian", :player-url "http://www.atpworldtour.com/tennis/players/ME82.aspx", :seed nil, :slot-number "15"} {:player-name "Chardy, Jeremy", :player-url "http://www.atpworldtour.com/tennis/players/CA12.aspx", :seed "(8)", :slot-number "16"} {:player-name "Lopez, Feliciano", :player-url "http://www.atpworldtour.com/tennis/players/L397.aspx", :seed "(6)", :slot-number "17"} {:player-name "Kukushkin, Mikhail", :player-url "http://www.atpworldtour.com/tennis/players/K926.aspx", :seed nil, :slot-number "18"} {:player-name "Hewitt, Lleyton", :player-url "http://www.atpworldtour.com/tennis/players/H432.aspx", :seed nil, :slot-number "19"} {:player-name "Kokkinakis, Thanasi", :player-url "http://www.atpworldtour.com/tennis/players/KD46.aspx", :seed "Q", :slot-number "20"} {:player-name "Copil, Marius", :player-url "http://www.atpworldtour.com/tennis/players/CA99.aspx", :seed "Q", :slot-number "21"} {:player-name "Sugita, Yuichi", :player-url "http://www.atpworldtour.com/tennis/players/SE73.aspx", :seed "Q", :slot-number "22"} {:player-name "Bye", :player-url nil, :seed nil, :slot-number "23"} {:player-name "Simon, Gilles", :player-url "http://www.atpworldtour.com/tennis/players/SD32.aspx", :seed "(3)", :slot-number "24"} {:player-name "Dimitrov, Grigor", :player-url "http://www.atpworldtour.com/tennis/players/D875.aspx", :seed "(5)", :slot-number "25"} {:player-name "Haase, Robin", :player-url "http://www.atpworldtour.com/tennis/players/H756.aspx", :seed nil, :slot-number "26"} {:player-name "Istomin, Denis", :player-url "http://www.atpworldtour.com/tennis/players/I165.aspx", :seed nil, :slot-number "27"} {:player-name "Cilic, Marin", :player-url "http://www.atpworldtour.com/tennis/players/C977.aspx", :seed nil, :slot-number "28"} {:player-name "Kuznetsov, Alex", :player-url "http://www.atpworldtour.com/tennis/players/K737.aspx", :seed "LL", :slot-number "29"} {:player-name "Ebden, Matthew", :player-url "http://www.atpworldtour.com/tennis/players/E690.aspx", :seed nil, :slot-number "30"} {:player-name "Bye", :player-url nil, :seed nil, :slot-number "31"} {:player-name "Nishikori, Kei", :player-url "http://www.atpworldtour.com/tennis/players/N552.aspx", :seed "(2)", :slot-number "32"}),
        :start-date "30.12.2013",
        :surface "Hard"}
-;      (parse-tournament dbl-tournament-url) =>
-;      {:draw "32",
-;       :end-date "05.01.2014"}
-      )
+      (parse-tournament dbl-tournament-url) =>
+      {:draw "16",
+       :end-date "05.01.2014",
+       :financial-commitment "$511,825",
+       :location "Australia",
+       :matches '({:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=4&p=F324", :round "R16", :score "7-5, 7-6(5)", :winner ("Federer, Roger" "Mahut, Nicolas")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=4&p=CA12", :round "R16", :score "0-6, 6-4, 10-4", :winner ("Chardy, Jeremy" "Dimitrov, Grigor")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=4&p=C834", :round "R16", :score "3-6, 7-5, 10-7", :winner ("Cabal, Juan Sebastian" "Farah, Robert")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=4&p=ME05", :round "R16", :score "6-3, 3-6, 10-8", :winner ("Matosevic, Marinko" "Tursunov, Dmitry")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=4&p=A678", :round "R16", :score "6-2, 6-4", :winner ("Anderson, Kevin" "Lindstedt, Robert")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=4&p=MC81", :round "R16", :score "6-3, 6-4", :winner ("Murray, Jamie" "Peers, John")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=4&p=E690", :round "R16", :score "6-1, 6-3", :winner ("Ebden, Matthew" "Kokkinakis, Thanasi")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=4&p=F364", :round "R16", :score "6-3, 7-6(4)", :winner ("Fyrstenberg, Mariusz" "Nestor, Daniel")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=5&p=F324", :round "QF", :score "7-6(3), 6-7(5), 11-9", :winner ("Federer, Roger" "Mahut, Nicolas")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=5&p=C834", :round "QF", :score "7-5, 3-6, 10-3", :winner ("Cabal, Juan Sebastian" "Farah, Robert")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=5&p=MC81", :round "QF", :score "4-6, 7-6(2), 14-12", :winner ("Murray, Jamie" "Peers, John")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=5&p=F364", :round "QF", :score "7-5, 4-6, 10-8", :winner ("Fyrstenberg, Mariusz" "Nestor, Daniel")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=6&p=C834", :round "SF", :score "7-6(5), 6-3", :winner ("Cabal, Juan Sebastian" "Farah, Robert")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=6&p=F364", :round "SF", :score "7-5, 7-6(5)", :winner ("Fyrstenberg, Mariusz" "Nestor, Daniel")} {:match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=7&p=F364", :round "F", :score "6-7(4), 6-4, 10-7", :winner ("Fyrstenberg, Mariusz" "Nestor, Daniel")}),
+       :name "Brisbane International presented by Suncorp",
+       :prize-money "$452,670",
+       :seeds '({:player-name ("Rojer, Jean-Julien" "Tecau, Horia"), :player-url ("http://www.atpworldtour.com/tennis/players/R513.aspx" "http://www.atpworldtour.com/tennis/players/T749.aspx"), :seed "(1)", :slot-number "1"} {:player-name ("Federer, Roger" "Mahut, Nicolas"), :player-url ("http://www.atpworldtour.com/tennis/players/F324.aspx" "http://www.atpworldtour.com/tennis/players/M873.aspx"), :seed nil, :slot-number "2"} {:player-name ("Chardy, Jeremy" "Dimitrov, Grigor"), :player-url ("http://www.atpworldtour.com/tennis/players/CA12.aspx" "http://www.atpworldtour.com/tennis/players/D875.aspx"), :seed nil, :slot-number "3"} {:player-name ("Fleming, Colin" "Hutchins, Ross"), :player-url ("http://www.atpworldtour.com/tennis/players/F454.aspx" "http://www.atpworldtour.com/tennis/players/H635.aspx"), :seed nil, :slot-number "4"} {:player-name ("Cabal, Juan Sebastian" "Farah, Robert"), :player-url ("http://www.atpworldtour.com/tennis/players/C834.aspx" "http://www.atpworldtour.com/tennis/players/F525.aspx"), :seed "(4)", :slot-number "5"} {:player-name ("Guccione, Chris" "Hewitt, Lleyton"), :player-url ("http://www.atpworldtour.com/tennis/players/G621.aspx" "http://www.atpworldtour.com/tennis/players/H432.aspx"), :seed "WC", :slot-number "6"} {:player-name ("Matosevic, Marinko" "Tursunov, Dmitry"), :player-url ("http://www.atpworldtour.com/tennis/players/ME05.aspx" "http://www.atpworldtour.com/tennis/players/T315.aspx"), :seed nil, :slot-number "7"} {:player-name ("Nishikori, Kei" "Querrey, Sam"), :player-url ("http://www.atpworldtour.com/tennis/players/N552.aspx" "http://www.atpworldtour.com/tennis/players/Q927.aspx"), :seed nil, :slot-number "8"} {:player-name ("Cilic, Marin" "Dlouhy, Lukas"), :player-url ("http://www.atpworldtour.com/tennis/players/C977.aspx" "http://www.atpworldtour.com/tennis/players/D487.aspx"), :seed nil, :slot-number "9"} {:player-name ("Anderson, Kevin" "Lindstedt, Robert"), :player-url ("http://www.atpworldtour.com/tennis/players/A678.aspx" "http://www.atpworldtour.com/tennis/players/L335.aspx"), :seed nil, :slot-number "10"} {:player-name ("Butorac, Eric" "Klaasen, Raven"), :player-url ("http://www.atpworldtour.com/tennis/players/BC35.aspx" "http://www.atpworldtour.com/tennis/players/K609.aspx"), :seed nil, :slot-number "11"} {:player-name ("Murray, Jamie" "Peers, John"), :player-url ("http://www.atpworldtour.com/tennis/players/MC81.aspx" "http://www.atpworldtour.com/tennis/players/PC96.aspx"), :seed "(3)", :slot-number "12"} {:player-name ("Ebden, Matthew" "Kokkinakis, Thanasi"), :player-url ("http://www.atpworldtour.com/tennis/players/E690.aspx" "http://www.atpworldtour.com/tennis/players/KD46.aspx"), :seed "WC", :slot-number "13"} {:player-name ("Nieminen, Jarkko" "Simon, Gilles"), :player-url ("http://www.atpworldtour.com/tennis/players/N289.aspx" "http://www.atpworldtour.com/tennis/players/SD32.aspx"), :seed nil, :slot-number "14"} {:player-name ("Istomin, Denis" "Sijsling, Igor"), :player-url ("http://www.atpworldtour.com/tennis/players/I165.aspx" "http://www.atpworldtour.com/tennis/players/SF36.aspx"), :seed nil, :slot-number "15"} {:player-name ("Fyrstenberg, Mariusz" "Nestor, Daniel"), :player-url ("http://www.atpworldtour.com/tennis/players/F364.aspx" "http://www.atpworldtour.com/tennis/players/N210.aspx"), :seed "(2)", :slot-number "16"}),
+       :start-date "30.12.2013",
+       :surface "Hard"})
 
 (fact "returns data from the player page"
       (parse-player player-test-url) =>
@@ -152,3 +164,14 @@
        :tournament-url "http://www.atpworldtour.com/Tennis/Tournaments/Brisbane.aspx",
        :winner "Roger Federer",
        :winner-url "http://www.atpworldtour.com/Tennis/Players/Top-Players/Roger-Federer.aspx"})
+
+(fact "returns data from the rankings page"
+      (first (parse-rankings doubles-ranking-url)) =>
+      {:name "Bryan,&nbsp;Bob",
+       :pts "12,790",
+       :pts-url "http://www.atpworldtour.com/Tennis/Players/Top-Players/Bob-Bryan.aspx?t=rb",
+       :rank "1",
+       :tourn-played "22",
+       :tourn-played-url "http://www.atpworldtour.com/Tennis/Players/Top-Players/Bob-Bryan.aspx?t=pa&m=s",
+       :url "/Tennis/Players/Top-Players/Bob-Bryan.aspx",
+       :week-change "Points"})
