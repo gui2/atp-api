@@ -53,7 +53,8 @@
 
 (defn player-url? [url]
   (or (substring? "atpworldtour.com/Tennis/Players/" url)
-      (substring? "atpworldtour.com/tennis/players/" url)))
+      (or (substring? "atpworldtour.com/tennis/players/" url)
+          (substring? "resources" url))))
 
 (defn get-text [tag]
   (clojure.string/replace tag #"<[^>]*>" ""))
@@ -173,7 +174,7 @@
               :coach (re-find #"(?<=Coach:</span> ).+?(?=</li>)" page)
               :website (re-find #"(?<=Website:</span> <a href=\").+?(?=\")" page)
               :nationality (re-find #"(?<=height=\"48\"  title=\").+?(?=\")" page)
-              :ytd-prize (re-find #"(?<=<td width=\"87\">).+?(?=[^>]</td>)" page)
+              :ytd-prize (re-find #"(?<=<td width=\"87\">).+?[^>](?=</td>)" page)
               :career-prize (re-find #"(?<=<td width=\"87\">).+?(?=<p)" page)
               :singles {:this-year {:ranking (re-find player-current-rank sgl-block)
                                     :week-change (get-rank-change-value (re-find player-rank-change sgl-block))

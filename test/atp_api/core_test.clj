@@ -8,6 +8,7 @@
 (def tournament-url "http://www.atpworldtour.com/Share/Event-Draws.aspx?e=339&y=2014")
 (def dbl-tournament-url "http://www.atpworldtour.com/Share/Event-Draws.aspx?e=339&y=2014&t=d")
 (def player-url "http://www.atpworldtour.com/Tennis/Players/Le/I/Ivan-Lendl.aspx")
+(def player-test-url (clojure.java.io/resource "test/player-test.html"))
 (def match-stats-url "http://www.atpworldtour.com/Share/Match-Facts-Pop-Up.aspx?t=0339&y=2014&r=4&p=F324")
 (def derp-url "http://www.asdf.qewrty/")
 
@@ -98,9 +99,26 @@
 ;       :end-date "05.01.2014"}
       )
 
-; TODO: perhaps use static data for testing this
 (fact "returns data from the player page"
-      (parse-player player-url) => truthy)
+      (parse-player player-test-url) =>
+      {:age "32",
+       :birthday "08.08.1981",
+       :birthplace "Basel, Switzerland",
+       :career-prize "$80,748,177",
+       :coach "Severin Luthi and Stefan Edberg",
+       :doubles {:career {:ranking "24", :titles "8", :win-loss "126-84"},
+                 :this-year {:ranking "130", :titles "0", :week-change "228", :win-loss "5-2"}},
+       :height "185 cm",
+       :name "Roger Federer",
+       :nationality "Switzerland",
+       :plays "Right-handed",
+       :residence "Bottmingen, Switzerland",
+       :singles {:career {:ranking "1", :titles "78", :win-loss "942-218"},
+                 :this-year {:ranking "5", :titles "1", :week-change "3", :win-loss "19-3"}},
+       :turned-pro "1998",
+       :website "http://www.rogerfederer.com",
+       :weight "85 kg",
+       :ytd-prize "$1,529,762"})
 
 (fact "returns data from the match stats page"
       (parse-match-stats match-stats-url) =>
