@@ -6,7 +6,7 @@ A Clojure API to retrieve data from the [ATP World Tour website](http://www.atpw
 
 ```clj
 ; Step 1: add to your "project.clj" file
-:dependencies [[atp-api "0.2.3"]]
+:dependencies [[atp-api "0.2.4"]]
 
 ; Step 2: Add the API to your .clj file
 (require '[atp-api.core :as atp])

@@ -240,7 +240,7 @@
         last-block (re-seq #"(?<=class=\"last\"><a ).+?(?=</td>)" page)]
     (map #(into {} {:rank (re-find #"(?<=rank\">).+?(?=<)" %1)
                     :name (re-find rank-inner-text %1)
-                    :url (re-find rank-player-url %1)
+                    :url (str base-url (re-find rank-player-url %1))
                     :pts (re-find rank-inner-text %2)
                     :pts-url (str base-url (re-find rank-player-url %2))
                     :week-change %3
