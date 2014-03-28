@@ -234,10 +234,14 @@
 
 ; Ranking page utils
 (defn map-rankings [page]
-  (let [first-block (re-seq #"(?s)(?<=class=\"first\">\r).+?(?=<td>0)" page)
+  (let [first-block (re-seq #"(?s)(?<=class=\"first\">\r).+?(?=<td>[-0-9])" page)
         pts-block (re-seq #"(?<=<td><a).+?(?=</td>)" page)
-        change-block (re-seq #"(?<=<td>)[^<]+?(?=</td>)" page)
+        change-block (re-seq #"(?<=<td>)[^<a-zA-Z]+?(?=</td>)" page)
         last-block (re-seq #"(?<=class=\"last\"><a ).+?(?=</td>)" page)]
+    (println (count first-block))
+    (println (count pts-block))
+    (println (count change-block))
+    (println (count last-block))
     (map #(into {} {:rank (re-find #"(?<=rank\">).+?(?=<)" %1)
                     :name (re-find rank-inner-text %1)
                     :url (str base-url (re-find rank-player-url %1))

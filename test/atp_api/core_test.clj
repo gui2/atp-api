@@ -120,7 +120,7 @@
        :coach "Severin Luthi and Stefan Edberg",
        :doubles {:career {:ranking "24", :titles "8", :win-loss "126-84"},
                  :this-year {:ranking "130", :titles "0", :week-change "228", :win-loss "5-2"}},
-       :height "185 cm",
+       :height "185",
        :name "Roger Federer",
        :nationality "Switzerland",
        :plays "Right-handed",
@@ -129,7 +129,7 @@
                  :this-year {:ranking "5", :titles "1", :week-change "3", :win-loss "19-3"}},
        :turned-pro "1998",
        :website "http://www.rogerfederer.com",
-       :weight "85 kg",
+       :weight "85",
        :ytd-prize "$1,529,762"})
 
 (fact "returns data from the match stats page"
@@ -173,5 +173,5 @@
        :rank "1",
        :tourn-played "22",
        :tourn-played-url "http://www.atpworldtour.com/Tennis/Players/Top-Players/Bob-Bryan.aspx?t=pa&m=s",
-       :url "/Tennis/Players/Top-Players/Bob-Bryan.aspx",
+       :url "http://www.atpworldtour.com/Tennis/Players/Top-Players/Bob-Bryan.aspx",
        :week-change "Points"})
